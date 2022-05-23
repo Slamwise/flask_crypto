@@ -6,10 +6,10 @@ import time
 from datetime import datetime
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from flask import Flask, render_template
+from flask import Flask, render_template, Markup
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 @app.route('/')
 def index():
@@ -19,7 +19,7 @@ def index():
 @app.route('/whaletrades/<coin>')
 def whaletrades(coin=None):
     # // Fetching data:
-    tdf = get_whaletrades(500, coin)
+    tdf = get_whaletrades(100, coin)
 
     start_ts = int(tdf['Date'].tail(1).item().timestamp()) - 300
 
@@ -70,11 +70,18 @@ def whaletrades(coin=None):
     # Set y-axes titles
     fig.update_yaxes(title_text="Price", secondary_y=False, side='right')
     fig.update_yaxes(title_text="CVD", secondary_y=True, side='left')
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0.0)',
+        plot_bgcolor='rgba(0,0,0,0.0)'
+    )
 
     last_price = float(daily_info['last_price'])
     prev_price_24h = float(daily_info['prev_price_24h'])
 
-    return fig.show()
+    fig_html = fig.to_html()
+
+    context = {"showgraph": "showgraph"}
+    return render_template('chart.html', chart_placeholder=Markup(fig_html))
 
 if __name__ == '__main__':
     app.run(debug=True)
