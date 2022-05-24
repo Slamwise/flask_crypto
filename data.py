@@ -1,4 +1,3 @@
-import hmac
 import requests
 from requests import request
 import pandas as pd

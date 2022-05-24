@@ -71,8 +71,8 @@ def whaletrades(coin=None):
     fig.update_yaxes(title_text="Price", secondary_y=False, side='right')
     fig.update_yaxes(title_text="CVD", secondary_y=True, side='left')
     fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0.0)',
-        plot_bgcolor='rgba(0,0,0,0.0)'
+        paper_bgcolor='rgba(0,0,0,0.6)',
+        plot_bgcolor='rgba(0,0,0,0.6)'
     )
 
     last_price = float(daily_info['last_price'])
