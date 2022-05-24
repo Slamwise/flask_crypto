@@ -25,24 +25,8 @@ def whaletrades(coin=None):
 
     daily_info = bybcall('get', f'/v2/public/tickers?symbol={coin}USD')['result'][0]
 
-    # Gatherint multiple days of data
-    if datetime.now().timestamp() - start_ts >= 86400:
-        end_ts = int(datetime.now().timestamp())
-        time_list = [time for time in range(start_ts, end_ts, 86400)]
-        if time_list[-1] != end_ts:
-            time_list.append(end_ts)
-        dflist = []
-        for idx, t in enumerate(time_list):
-            if idx+1 != len(time_list):
-                df = get_price(f'{coin}/USD', t, time_list[idx+1])
-                dflist.append(df)
-                time.sleep(0.05)
-        historical = pd.concat(dflist)
 
-    else:
-        historical = get_price(f'{coin}/USD', start_ts)
-
-    #data_load_state.text("Done!")
+    historical = get_price(f'{coin}/USD', start_ts, int(datetime.utcnow().timestamp()))
 
     # // Plot data:
     ldf = tdf.where(tdf.Size > 0).dropna()
@@ -71,8 +55,8 @@ def whaletrades(coin=None):
     fig.update_yaxes(title_text="Price", secondary_y=False, side='right')
     fig.update_yaxes(title_text="CVD", secondary_y=True, side='left')
     fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0.6)',
-        plot_bgcolor='rgba(0,0,0,0.6)'
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
 
     last_price = float(daily_info['last_price'])
