@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
+def get_movers()
 show_relative_volume_gainers = False
 show_highest_perp_volume = False
 show_assets_meeting_criteria = True
