@@ -7,7 +7,8 @@ from datetime import datetime
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from flask import Flask, render_template, Markup
-
+import os.path
+import os
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -19,18 +20,33 @@ def index():
 @app.route('/whaletrades/<coin>')
 def whaletrades(coin=None):
     # // Fetching data:
-    tdf = get_whaletrades(100, coin)
+    if os.path.isfile('ldf.pkl'):
+        ldf = pd.read_pickle("./ldf.pkl")
+    else:
+        ldf = tdf.where(tdf.Size > 0).dropna()
+        ldf.to_pickle('./ldf.pkl')
+    if os.path.isfile('sdf.pkl'):
+        sdf = pd.read_pickle("./sdf.pkl")
+    else:
+        sdf = tdf.where(tdf.Size < 0).dropna()
+        sdf.to_pickle('./sdf.pkl')
+    if os.path.isfile('hist.pkl'):
+        historical = pd.read_pickle("./hist.pkl")
+    else:
+        historical = get_price(f'{coin}/USD', start_ts, int(datetime.utcnow().timestamp()))
+        historical.to_pickle('./hist.pkl')
+    tdf = get_whaletrades(500, coin)
 
     start_ts = int(tdf['Date'].tail(1).item().timestamp()) - 300
 
     daily_info = bybcall('get', f'/v2/public/tickers?symbol={coin}USD')['result'][0]
 
-
-    historical = get_price(f'{coin}/USD', start_ts, int(datetime.utcnow().timestamp()))
-
     # // Plot data:
-    ldf = tdf.where(tdf.Size > 0).dropna()
+    
     sdf = tdf.where(tdf.Size < 0).dropna()
+
+
+    sdf.to_pickle('./sdf.pkl')
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(
@@ -67,5 +83,21 @@ def whaletrades(coin=None):
     context = {"showgraph": "showgraph"}
     return render_template('chart.html', chart_placeholder=Markup(fig_html))
 
-if __name__ == '__main__':
+if __name__ == 'app':
+    print('running')
+    try:
+        os.remove('./sdf.pkl')
+    except:
+        print('sdf.pkl remove failed')
+        pass
+    try:
+        os.remove('./ldf.pkl')
+    except:
+        print('ldf.pkl remove failed')
+        pass
+    try:
+        os.remove('./hist.pkl')
+    except:
+        print('hist.pkl remove failed')
+        pass    
     app.run(debug=True)
