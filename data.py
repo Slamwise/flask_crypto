@@ -17,7 +17,7 @@ def bybcall(method, endpoint):
     response = request(method, url+endpoint)
     return response.json()
   
-def get_price(pair, start_ts, end_ts = None, resolution = '300', exchange = 'FTX'):
+def get_price(pair, start_ts, end_ts = None, resolution = '3600', exchange = 'FTX'):
 
     intervals =  {15:3600, 60:86400, 300:86400, 900:86400, 3600:86400*5, 14400:86400*5, 86400:86400*10, 7*86400:86400*30, 30*86400:86400*365}
     window = intervals[int(resolution)]
@@ -42,7 +42,7 @@ def get_price(pair, start_ts, end_ts = None, resolution = '300', exchange = 'FTX
                     df.set_index('time', inplace=True)
                     dflist.append(df)
                     print(f'Fetched df {idx}/{len(time_list)-1}')
-                    time.sleep(0.1)  
+                    time.sleep(0.3)  
 
             historical = pd.concat(dflist)
             return historical

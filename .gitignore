@@ -3,6 +3,7 @@ test.py
 ldf.pkl
 sdf.pkl
 hist.pkl
+tdf.pkl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -21,32 +21,29 @@ def index():
 def whaletrades(coin=None):
     # // Fetching data:
     if os.path.isfile('ldf.pkl'):
-        ldf = pd.read_pickle("./ldf.pkl")
+        tdf = pd.read_pickle('./tdf.pkl')
+        ldf = pd.read_pickle('./ldf.pkl')
+        sdf = pd.read_pickle('./sdf.pkl')
     else:
+        tdf = get_whaletrades(200, coin)
+        tdf.to_pickle('./tdf.pkl')
+
         ldf = tdf.where(tdf.Size > 0).dropna()
         ldf.to_pickle('./ldf.pkl')
-    if os.path.isfile('sdf.pkl'):
-        sdf = pd.read_pickle("./sdf.pkl")
-    else:
+
         sdf = tdf.where(tdf.Size < 0).dropna()
         sdf.to_pickle('./sdf.pkl')
+
     if os.path.isfile('hist.pkl'):
         historical = pd.read_pickle("./hist.pkl")
     else:
+        start_ts = int(tdf['Date'].tail(1).item().timestamp()) - 300
         historical = get_price(f'{coin}/USD', start_ts, int(datetime.utcnow().timestamp()))
         historical.to_pickle('./hist.pkl')
-    tdf = get_whaletrades(500, coin)
-
-    start_ts = int(tdf['Date'].tail(1).item().timestamp()) - 300
-
+    
     daily_info = bybcall('get', f'/v2/public/tickers?symbol={coin}USD')['result'][0]
 
     # // Plot data:
-    
-    sdf = tdf.where(tdf.Size < 0).dropna()
-
-
-    sdf.to_pickle('./sdf.pkl')
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(
@@ -85,6 +82,11 @@ def whaletrades(coin=None):
 
 if __name__ == 'app':
     print('running')
+    try:
+        os.remove('./tdf.pkl')
+    except:
+        print('tdf.pkl remove failed')
+        pass  
     try:
         os.remove('./sdf.pkl')
     except:
