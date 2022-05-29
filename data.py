@@ -17,7 +17,7 @@ def bybcall(method, endpoint):
     response = request(method, url+endpoint)
     return response.json()
   
-def get_price(pair, start_ts, end_ts = None, resolution = '3600', exchange = 'FTX'):
+def get_price(pair, start_ts, end_ts = None, resolution = '14400', exchange = 'FTX'):
 
     intervals =  {15:3600, 60:86400, 300:86400, 900:86400, 3600:86400*5, 14400:86400*5, 86400:86400*10, 7*86400:86400*30, 30*86400:86400*365}
     window = intervals[int(resolution)]
