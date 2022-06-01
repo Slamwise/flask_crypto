@@ -41,7 +41,7 @@ def get_price(pair, start_ts, end_ts = None, resolution = '14400', exchange = 'F
                     df['time'] = pd.to_datetime(df['time'], unit='ms')
                     df.set_index('time', inplace=True)
                     dflist.append(df)
-                    print(f'Fetched df {idx}/{len(time_list)-1}')
+                    print(f'Fetched df {idx+1}/{len(time_list)-1}')
                     time.sleep(0.3)  
 
             historical = pd.concat(dflist)

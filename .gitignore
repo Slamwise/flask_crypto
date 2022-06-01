@@ -1,9 +1,6 @@
 sec.py
 test.py
-ldf.pkl
-sdf.pkl
-hist.pkl
-tdf.pkl
+cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
